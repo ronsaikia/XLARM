@@ -1,0 +1,6 @@
+node_modules/
+.env
+input.wav
+reply.mp3
+__pycache__/
+deno.lock
