@@ -1,5 +1,5 @@
 # XLARM: Multimodal AI Lab Assistant
-> **Arduino Physical AI Challenge India 2026 Submission** | **Team Yukti**
+> **Arduino Physical AI Challenge India 2026 Submission** | **Team **
 
 XLARM is an intelligent, voice-activated robotic lab assistant that bridges the gap between Large Language Models and real-time physical actuation. Crafted with a focus on clean, responsive interaction, it seamlessly combines conversational AI, computer vision, and a 6-DOF robotic arm to execute hardware tasks with zero-latency synchronization.
 
