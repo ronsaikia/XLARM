@@ -6,38 +6,22 @@ const http = require('http');
 const Groq = require('groq-sdk');
 require('dotenv/config');
 
-// --- ADD THIS RIGHT AFTER YOUR EXISTING require(...) LINES, BEFORE ANYTHING ELSE ---
-// Without these, an uncaught error anywhere (e.g. inside the mpv/yt-dlp
-// stdout handler, or a rejected promise from the Groq/transcription calls)
-// kills the ENTIRE Node process silently - including the HTTP server on
-// port 5000. That's consistent with what you're seeing: the Uno Q gets
-// "Connection refused" for the whole test, meaning nothing is listening on
-// port 5000 anymore, even though it clearly was at startup.
+
 process.on('uncaughtException', (err) => {
-    console.error('\n🔥 UNCAUGHT EXCEPTION - process would have died silently without this handler:');
+    console.error('\n UNCAUGHT EXCEPTION - process would have died silently without this handler:');
     console.error(err);
-    // Deliberately NOT calling process.exit() here so the HTTP server on
-    // port 5000 stays alive and you can see what actually broke.
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('\n🔥 UNHANDLED PROMISE REJECTION - would have crashed the process:');
+    console.error('\n UNHANDLED PROMISE REJECTION - would have crashed the process:');
     console.error(reason);
 });
-// --- END ADDITION ---
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const AUDIO_IN = '/dev/shm/input.wav';
 const AUDIO_OUT = '/dev/shm/reply.mp3';
 
-// --- NON-BLOCKING AUDIO RECORDING ---
-// This replaces the old execSync() call. execSync() freezes Node's entire
-// single-threaded event loop until the command finishes (i.e. until you stop
-// speaking), which meant the HTTP server on port 5000 could not accept any
-// incoming connections from the Uno Q while it was recording - even though
-// server.listen(5000, ...) had already run. spawn() runs the command in the
-// background and just notifies us with an event when it's done, so the event
-// loop - and therefore the HTTP server - stays alive and responsive the
-// entire time.
+
 function recordAudio() {
     return new Promise((resolve, reject) => {
         const cmd = `arecord -q -D plughw:1,0 -f S16_LE -r 16000 -c 1 -t wav | sox -q -t wav - -t wav ${AUDIO_IN} silence 1 0.1 5% 1 1.2 5%`;
@@ -57,7 +41,7 @@ function recordAudio() {
     });
 }
 
-// --- PI COMMAND & FEEDBACK SERVER ---
+
 let pendingCommand = null;
 let visionResolve = null;
 
@@ -106,20 +90,10 @@ let chatHistory = [
     }
 ];
 
-// --- MUSIC STREAMING WITH AUTOMATIC RETRY ---
-// yt-dlp occasionally hits a transient 403 from YouTube even with a working
-// JS runtime (deno) and correct PATH - this has been confirmed by testing
-// the identical command manually right after a Node-triggered failure and
-// having it succeed instantly. Rather than chase an intermittent, external
-// cause further, this retries automatically up to 3 total attempts, 1.5s
-// apart, before giving up. The arm-sync trigger logic (matching the
-// 'A: 00:00:01'/'A: 00:00:02' timestamp lines to set pendingCommand) is
-// completely unchanged from before - it's just now inside a function that
-// can call itself again on failure.
-// --- MUSIC STREAMING WITH AUTOMATIC RETRY ---
+
 function launchMusicStream(searchQuery, targetLabel, attemptsLeft = 3) {
     
-    // --- NEW: Fixes the 403 Forbidden by passing the exact Node.js path to solve the YouTube JS challenge ---
+    
     let mpvCmd = `/usr/local/bin/yt-dlp -f "bestaudio" -q -o - "scsearch1:${searchQuery}" | mpv --no-video --ao=alsa -`;
     const child = exec(mpvCmd + " &");
 
@@ -131,14 +105,14 @@ function launchMusicStream(searchQuery, targetLabel, attemptsLeft = 3) {
         for (let line of lines) {
             line = line.trim();
             if (line.length > 0) {
-                // Prints exactly the way you requested
+                
                 console.log(`[Music]: ${line}`);
 
                 if (line.includes('403') || line.includes('unable to download video data')) {
                     sawError = true;
                 }
 
-                // BULLETPROOF SYNC: Arm only dances when actual audio playback hits 1 second!
+                
                 if (!isMusicPlaying && (line.includes('A: 00:00:01') || line.includes('A: 00:00:02'))) {
                     isMusicPlaying = true;
                     pendingCommand = { subsystem: 'music', action: 'play', target: targetLabel };
@@ -169,10 +143,10 @@ async function liveAssistant() {
         try {
             console.log("\nListening... (Speak now, stops when you pause)");
             await recordAudio();
-	    // --- NEW: Prevent 'Audio file is too short' crash ---
+	  
             const audioStats = fs.statSync(AUDIO_IN);
             if (audioStats.size < 1000) {
-                continue; // File is essentially empty (just silence), skip to the next loop safely.
+                continue; 
             }
 
             process.stdout.write("Transcribing... ");
@@ -252,9 +226,7 @@ async function liveAssistant() {
                                 content: `Live Camera Scan Results: ${JSON.stringify(visionResult)}`
                             });
 
-                        // ---------------------------------------------------------
-                        // THE MUSIC ENGINE (PERFECT SYNC)
-                        // ---------------------------------------------------------
+                       
                         } else if (args.subsystem === 'music') {
                             if (args.action === 'stop') {
                                 console.log("Stopping music...");
@@ -310,15 +282,15 @@ async function liveAssistant() {
             console.log("Speaking...");
             await execAsync(`edge-tts --text "${replyText}" --write-media ${AUDIO_OUT}`);
               
-            // --- NEW: Tell Arduino to nod gently as speech begins ---
+            
             pendingCommand = { subsystem: 'arm', action: 'animate', target: 'speak_start' };
 
             try {
-                // Blocks the Pi loop until the voice finishes playing
+                
                 await execAsync(`mpg123 -q ${AUDIO_OUT}`);
             } catch(e) {}
 
-            // --- NEW: Tell Arduino to drop limp to the table the millisecond speech ends ---
+            
             pendingCommand = { subsystem: 'arm', action: 'animate', target: 'speak_stop' };
 
             if (fs.existsSync(AUDIO_IN)) fs.unlinkSync(AUDIO_IN);
