@@ -12,7 +12,7 @@ def pixel_to_cm(px, py):
     
     
     x_cm = ((px / 640.0) - 0.5) * workspace_width_cm
-    y_cm = max(5.0, (1.0 - (py / 480.0)) * workspace_depth_cm) # Min 5cm clearance
+    y_cm = max(5.0, (1.0 - (py / 480.0)) * workspace_depth_cm) 
     return x_cm, y_cm
 
 
@@ -21,7 +21,7 @@ _ELBOW_R = np.array([25, 0, 20])
 _R_COEFFS = np.polyfit(_ELBOW_ANGLES, _ELBOW_R, 2)  
 
 def solve_kinematics(x_cm, y_cm, z_state):
-    # 1. Base Angle (Yaw)
+   
     base_yaw = math.degrees(math.atan2(y_cm, x_cm))
     base_deg = max(SAFE_MIN, min(SAFE_MAX, 90 + base_yaw))
     
@@ -39,7 +39,7 @@ def solve_kinematics(x_cm, y_cm, z_state):
         shoulder_deg, wrist_pitch = 110, 45 # High clearance, point down
     elif z_state == "DESCEND":
         shoulder_deg, wrist_pitch = 70, 90  # Lower down, flat to grab
-    else: # HOME
+    else: 
         shoulder_deg, wrist_pitch = 90, 90
 
     return round(base_deg), round(shoulder_deg), round(elbow_deg), round(wrist_pitch)
