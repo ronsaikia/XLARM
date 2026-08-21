@@ -133,7 +133,7 @@ void relaxArmForce() {
 }
 
 void execute_command(String payload) {
-  logMsg("✅ MCU Executing: " + payload);
+  logMsg(" MCU Executing: " + payload);
 
   int colon1 = payload.indexOf(':');
   int colon2 = payload.indexOf(':', colon1 + 1);
@@ -153,12 +153,12 @@ void execute_command(String payload) {
     else if (action == "turn_on") {
       strip.fill(strip.Color(255, 255, 255)); 
       strip.show();
-      logMsg("💡 LED Ring turned ON");
+      logMsg(" LED Ring turned ON");
     }
     else if (action == "turn_off") {
       strip.clear(); 
       strip.show();
-      logMsg("💡 LED Ring turned OFF");
+      logMsg(" LED Ring turned OFF");
     }
     else if (action == "set_color") {
       int comma1 = value.indexOf(',');
@@ -171,9 +171,9 @@ void execute_command(String payload) {
         
         strip.fill(strip.Color(r, g, b));
         strip.show();
-        logMsg("💡 LED Ring color set to R:" + String(r) + " G:" + String(g) + " B:" + String(b));
+        logMsg(" LED Ring color set to R:" + String(r) + " G:" + String(g) + " B:" + String(b));
       } else {
-        logMsg("⚠️ Invalid RGB format received: " + value);
+        logMsg(" Invalid RGB format received: " + value);
       }
     }
   }
@@ -195,14 +195,14 @@ void execute_command(String payload) {
         int wroll = value.substring(commas[3] + 1, commas[4]).toInt();
         int gripper = value.substring(commas[4] + 1).toInt();
 
-        // Write safely to all 6 pins based on physical wiring
+       
         pwm.writeMicroseconds(6, angleToPulse(constrain(base, 20, 160)));
         pwm.writeMicroseconds(5, angleToPulse(constrain(shoulder, 20, 160)));
         pwm.writeMicroseconds(4, angleToPulse(constrain(elbow, 20, 160)));
         pwm.writeMicroseconds(3, angleToPulse(constrain(wpitch, 20, 160)));
         pwm.writeMicroseconds(2, angleToPulse(constrain(wroll, 20, 160)));
         
-        // GRIPPER: Allow wider range for open/close motion
+       
         pwm.writeMicroseconds(1, angleToPulse(constrain(gripper, 0, 180))); 
 
         logMsg("Executed Full Pose IK Sequence Frame");
@@ -307,14 +307,14 @@ void loop() {
         angle = dance_up ? 100 : 80; 
         dance_up = !dance_up; 
       } else {
-        // Gentler nodding for talking (95 / 85)
+        
         angle = talk_up ? 95 : 85;   
         talk_up = !talk_up;
       }
       
       uint16_t pulse = angleToPulse(angle);
-      pwm.writeMicroseconds(2, pulse); // Shoulder
-      pwm.writeMicroseconds(3, pulse); // Elbow
+      pwm.writeMicroseconds(2, pulse); 
+      pwm.writeMicroseconds(3, pulse); 
       last_twitch = millis();
     }
   } 
