@@ -1,11 +1,11 @@
-# XLARM: Autonomous Voice-Guided Physical AI Assistant
+# XL_ARM: Autonomous Voice-Guided Physical AI Assistant
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Vision Accuracy](https://img.shields.io/badge/YOLO--Pro_mAP@50-98%25-blue)
 ![Architecture](https://img.shields.io/badge/Architecture-Decentralized_Edge--to--Cloud-orange)
 ![License](https://img.shields.io/badge/License-MIT-purple)
 
-XLARM is a decentralized, multi-modal robotic lab assistant capable of interpreting conversational voice commands and executing complex pick-and-place maneuvers using real-time computer vision.
+XL_ARM is a decentralized, multi-modal robotic lab assistant capable of interpreting conversational voice commands and executing complex pick-and-place maneuvers using real-time computer vision.
 
 ## The Problem: The Computational Bottleneck
 
