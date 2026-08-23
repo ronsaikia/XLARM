@@ -66,4 +66,4 @@ This repository contains the software modules required to run the XLARM system:
 
 ## Authors
 MD Mehtab Hussain and Chiranjib Saikia (Team XL_ARM DUTABRO)
-Submitted for the Arduino Physical AI Challenge India 2026
+submitted for the Arduino Physical AI Challenge India 2026
