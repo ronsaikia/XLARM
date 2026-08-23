@@ -1,5 +1,5 @@
 # XLARM: Multimodal AI Lab Assistant
-> **Arduino Physical AI Challenge India 2026 Submission** | **Team XLARM DUTABRO**
+> **Arduino Physical AI Challenge India 2026 Submission** | **Team XL_ARM DUTABRO**
 
 XLARM is an intelligent, voice-activated robotic lab assistant that bridges the gap between Large Language Models and real-time physical actuation. Crafted with a focus on clean, responsive interaction, it seamlessly combines conversational AI, computer vision, and a 6-DOF robotic arm to execute hardware tasks with zero-latency synchronization.
 
@@ -19,4 +19,4 @@ The codebase leverages a decoupled, dual-board approach:
 * **Processing:** Arduino UNO Q (ABX00087), Raspberry Pi 3B
 * **Actuation:** 6-DOF Robotic Arm, Adafruit 16-Channel PWM Servo Driver
 * **Sensors:** Zebronics USB Web Camera, USB Microphone, WS2812 LED Ring
-* **Developers:** Engineered by Team XLARM DUTABRO at Assam Engineering College (AEC).
+* **Developers:** Engineered by Team XL_ARM DUTABRO at Assam Engineering College (AEC).
