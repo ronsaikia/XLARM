@@ -96,7 +96,7 @@ bool talk_up = false;
 unsigned long last_twitch = 0;
 unsigned long last_heartbeat = 0;
 bool is_limp = true;
-unsigned long lastManualWristTime = 0;   // NEW - tracks manual wrist activity
+unsigned long lastManualWristTime = 0;   
 
 const uint16_t ARM_PULSE_MIN = 537;
 const uint16_t ARM_PULSE_MAX = 2441;
@@ -247,8 +247,7 @@ void execute_command(String payload) {
       else if (target == "wrist_roll") jointPin = 2;
       else if (target == "gripper") { jointPin = 1; minA = 0; maxA = 180; }
 
-      // NEW - any explicit wrist command (joystick or voice) takes priority
-      // over the automatic talk/dance nod animation for the next 0.8s
+      
       if (target == "wrist_roll" || target == "wrist_pitch") {
         lastManualWristTime = millis();
       }
@@ -290,7 +289,7 @@ void setup() {
   Bridge.provide_safe("execute_command", execute_command);
   Bridge.provide_safe("heartbeat", handle_heartbeat);
 
-  Serial1.begin(115200);   // physical UART from the ESP32 joystick console
+  Serial1.begin(115200);   
 
   delay(1000);
   logMsg("UNO Q C++ Brain is online. System idle and limp.");
@@ -298,7 +297,7 @@ void setup() {
 
 void loop() {
 
-  // reads commands arriving from the ESP32 over the physical UART link
+
   static String serial1Buffer = "";
   while (Serial1.available()) {
     char c = Serial1.read();
@@ -324,8 +323,7 @@ void loop() {
 
   if (is_dancing || is_talking) {
     if (millis() - last_twitch > 400) {
-      // NEW - skip the automatic wrist twitch if a manual/voice wrist
-      // command landed in the last 0.8s, so manual control always wins
+     
       if (millis() - lastManualWristTime > 800) {
         int angle;
 
